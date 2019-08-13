@@ -32,7 +32,9 @@ def my_get(url, refer=None):
 
 def get_type_content(url, mm_type):
     soup = bs(my_get(url).content, "lxml")
-    total_page = int(soup.select_one("a.next.page-numbers").find_previous_sibling().text)
+    # total_page = int(soup.select_one("a.next.page-numbers").find_previous_sibling().text) 已失效
+    page_nums = soup.select(".page-numbers")
+    total_page = int(page_nums[len(page_nums) - 2].text)
     for page in range(1, total_page + 1):
         get_page_content(page, mm_type)
 
@@ -40,13 +42,13 @@ def get_type_content(url, mm_type):
 def main():
     # types = ['xinggan', 'japan', 'taiwan', 'mm']
     types = ['xinggan', ]
-    tasks = [Process(target=get_type_content, args=('http://www.mzitu.com/' + x, x,)) for x in types]
+    tasks = [Process(target=get_type_content, args=('https://www.mzitu.com/' + x, x,)) for x in types]
     for task in tasks:
         task.start()
 
 
 def get_page_content(page, mm_type):
-    href = "http://www.mzitu.com/" + mm_type + "/page/" + str(page)
+    href = "https://www.mzitu.com/" + mm_type + "/page/" + str(page)
     soup = bs(my_get(href).content, "lxml")
     li_list = soup.select("div.postlist ul#pins li")
     for li in li_list:
