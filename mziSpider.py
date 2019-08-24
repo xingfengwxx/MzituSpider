@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import random
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -63,7 +64,7 @@ def get_pic(url, mm_type):
         i += 1
         if i > 5:
             return
-        time.sleep(0.8)
+        random_sleep()
         response = my_get(url)
     li_soup = bs(response.content, "lxml")
     title = li_soup.title.text.replace(' ', '-')
@@ -79,7 +80,7 @@ def get_pic(url, mm_type):
                          .find_previous_sibling().text)
         for page in range(1, total_page + 1):
             download_pic(url + "/" + str(page), title, mm_type, refer)
-            time.sleep(0.8)
+            random_sleep()
         # tasks = [gevent.spawn(download_pic, url + "/" + str(page), title, mm_type, refer) for page in
         #          range(1, total_page + 1)]
         # gevent.joinall(tasks)
@@ -94,7 +95,7 @@ def download_pic(url, title, mm_type, refer):
         i += 1
         if i > 5:
             return
-        time.sleep(0.8)
+        random_sleep()
         response = my_get(url)
 
     if not os.path.exists("img"):
@@ -107,6 +108,12 @@ def download_pic(url, title, mm_type, refer):
         fs.write(response.content)
         t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         print(f"{t} download success:", title)
+
+
+def random_sleep():
+    # 默认0.8s
+    t = round(random.random() + 0.1, 1)
+    time.sleep(t)
 
 
 if __name__ == "__main__":
